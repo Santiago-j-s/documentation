@@ -108,11 +108,13 @@ async function up(trx) {
       `;
       const pivotWhereParams = [];
 
-      // For each pivot column, add a on condition to the query
-      table.pivotColumns.forEach(column => {
-        query += ` AND t1.?? = t2.??`;
-        pivotWhereParams.push(column, column);
-      });
+      if (table.pivotColumns) {
+        // For each pivot column, add a on condition to the query
+        table.pivotColumns.forEach(column => {
+          query += ` AND t1.?? = t2.??`;
+          pivotWhereParams.push(column, column);
+        });
+      }
 
       // Create temporary table with the ids of the repeated rows
       await trx.raw(query, [table.name, table.name, ...pivotWhereParams]);
